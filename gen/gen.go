@@ -8,9 +8,20 @@ import (
 	"os"
 )
 
+func Save(outFile string, save interface{}) {
+	keyFile, err := os.Create(outFile)
+	defer keyFile.Close()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	keyEncoder := gob.NewEncoder(keyFile)
+	keyEncoder.Encode(save)
+}
+
 func Gen(outFile string, length int) {
 	// Generate private key
-	privatekey, err := rsa.GenerateKey(rand.Reader, length)
+	privateKey, err := rsa.GenerateKey(rand.Reader, length)
 	if err != nil {
 		log.Println("ERROR: key.Gen generating private:", err)
 		return
@@ -25,35 +36,17 @@ func Gen(outFile string, length int) {
 	//        see http://golang.org/pkg/crypto/rsa/#GenerateMultiPrimeKey
 
 	// http://golang.org/pkg/crypto/rsa/#PrivateKey.Precompute
-	privatekey.Precompute()
+	privateKey.Precompute()
 
 	// http://golang.org/pkg/crypto/rsa/#PrivateKey.Validate
-	err = privatekey.Validate()
+	err = privateKey.Validate()
 	if err != nil {
 		log.Println("ERROR: key.Gen validating private:", err)
 		return
 	}
+	Save(outFile, privateKey)
 
-	var publickey *rsa.PublicKey
-	publickey = &privatekey.PublicKey
-
-	// save private and public key separately
-	privatekeyfile, err := os.Create(outFile)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	privatekeyencoder := gob.NewEncoder(privatekeyfile)
-	privatekeyencoder.Encode(privatekey)
-	privatekeyfile.Close()
-
-	publickeyfile, err := os.Create(outFile+".pub")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	publickeyencoder := gob.NewEncoder(publickeyfile)
-	publickeyencoder.Encode(publickey)
-	publickeyfile.Close()
+	var publicKey *rsa.PublicKey
+	publicKey = &privateKey.PublicKey
+	Save(outFile+".pub", publicKey)
 }

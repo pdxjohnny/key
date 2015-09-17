@@ -2,8 +2,8 @@ package decrypt
 
 import (
 	"fmt"
-	"log"
 	"io/ioutil"
+	"log"
 
 	"github.com/spf13/viper"
 

@@ -1,13 +1,13 @@
 package load
 
 import (
-	"log"
-	"os"
 	"crypto/rsa"
 	"encoding/gob"
+	"log"
+	"os"
 )
 
-func LoadFile(fileName string, loadTo interface{}) (error) {
+func LoadFile(fileName string, loadTo interface{}) error {
 	keyFile, err := os.Open(fileName)
 	defer keyFile.Close()
 	if err != nil {
@@ -18,13 +18,13 @@ func LoadFile(fileName string, loadTo interface{}) (error) {
 	decoder := gob.NewDecoder(keyFile)
 	err = decoder.Decode(loadTo)
 	if err != nil {
-		 log.Println("ERROR: load.LoadFile decoding: ", err)
-		 return err
+		log.Println("ERROR: load.LoadFile decoding: ", err)
+		return err
 	}
 	return nil
 }
 
-func LoadPrivate (fileName string) (*rsa.PrivateKey, error) {
+func LoadPrivate(fileName string) (*rsa.PrivateKey, error) {
 	var privateKey rsa.PrivateKey
 	err := LoadFile(fileName, &privateKey)
 	if err != nil {
@@ -34,10 +34,10 @@ func LoadPrivate (fileName string) (*rsa.PrivateKey, error) {
 	return &privateKey, nil
 }
 
-func LoadPublic (fileName string) (*rsa.PublicKey, error) {
+func LoadPublic(fileName string) (*rsa.PublicKey, error) {
 	var publicKey rsa.PublicKey
 	err := LoadFile(fileName, &publicKey)
-		if err != nil {
+	if err != nil {
 		log.Println("ERROR: load.LoadPublic while loading file: ", err)
 		return nil, err
 	}

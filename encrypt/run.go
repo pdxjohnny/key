@@ -23,6 +23,6 @@ func Run() {
 		log.Println("ERROR: encrypt.Run error encrypting: ", err)
 		return
 	}
-	fmt.Println(string(message))
+	fmt.Printf("%s", string(message))
 	return
 }
