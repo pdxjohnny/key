@@ -21,8 +21,5 @@ func Encrypt(publicKey *rsa.PublicKey, message []byte) ([]byte, error) {
 		log.Println("ERROR: key.Encrypt in rsa.EncryptOAEP: ", err)
 		return nil, err
 	}
-
-	log.Printf("OAEP encrypted [%s]\n", result)
-	log.Println()
 	return result, nil
 }

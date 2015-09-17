@@ -16,9 +16,9 @@ var ConfigOptions = map[string]interface{}{
 			"value": "keys/id_rsa.pub",
 			"help":  "Key to used for encryption",
 		},
-		"file": map[string]interface{}{
+		"message": map[string]interface{}{
 			"value": "",
-			"help":  "File to encrypt blank for stdin",
+			"help":  "File to encrypt blank for stdin or text",
 		},
 	},
 	"decrypt": map[string]interface{}{
@@ -26,9 +26,9 @@ var ConfigOptions = map[string]interface{}{
 			"value": "keys/id_rsa",
 			"help":  "Key to used for decryption",
 		},
-		"file": map[string]interface{}{
+		"message": map[string]interface{}{
 			"value": "",
-			"help":  "File to decrypt blank for stdin",
+			"help":  "File to decrypt blank for stdin or text",
 		},
 	},
 }

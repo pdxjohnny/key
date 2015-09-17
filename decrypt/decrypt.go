@@ -21,8 +21,5 @@ func Decrypt(privateKey *rsa.PrivateKey, message []byte) ([]byte, error) {
 		log.Println("ERROR: key.Decrypt in rsa.DecryptOAEP: ", err)
 		return nil, err
 	}
-
-	log.Printf("OAEP decrypted [%s]\n", result)
-	log.Println()
 	return result, nil
 }

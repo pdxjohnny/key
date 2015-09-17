@@ -1,13 +1,28 @@
 package encrypt
 
 import (
-	// "github.com/spf13/viper"
+	"fmt"
+	"log"
+
+	"github.com/spf13/viper"
+
+	"github.com/pdxjohnny/key/load"
 )
 
 func Run() {
-	// Decrypt(
-	// 	viper.GetString("key"),
-	// 	viper.GetInt("len"),
-	// )
+	publicKey, err := load.LoadPublic(viper.GetString("key"))
+	if err != nil {
+		log.Println("ERROR: encrypt.Run error loading public key: ", err)
+		return
+	}
+	message, err := Encrypt(
+		publicKey,
+		[]byte(viper.GetString("message")),
+	)
+	if err != nil {
+		log.Println("ERROR: encrypt.Run error encrypting: ", err)
+		return
+	}
+	fmt.Println(string(message))
 	return
 }

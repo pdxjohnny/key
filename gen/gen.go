@@ -3,8 +3,7 @@ package gen
 import (
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
+	"encoding/gob"
 	"log"
 	"os"
 )
@@ -35,46 +34,26 @@ func Gen(outFile string, length int) {
 		return
 	}
 
-	privateFile, err := os.Create(outFile)
+	var publickey *rsa.PublicKey
+	publickey = &privatekey.PublicKey
+
+	// save private and public key separately
+	privatekeyfile, err := os.Create(outFile)
 	if err != nil {
-		log.Println("ERROR: key.Gen creating private file:", err)
+		log.Println(err)
 		return
 	}
-	defer privateFile.Close()
-	err = pem.Encode(
-		privateFile,
-		&pem.Block{
-			Type:  "RSA PRIVATE KEY",
-			Bytes: x509.MarshalPKCS1PrivateKey(privatekey),
-		},
-	)
+	privatekeyencoder := gob.NewEncoder(privatekeyfile)
+	privatekeyencoder.Encode(privatekey)
+	privatekeyfile.Close()
+
+	publickeyfile, err := os.Create(outFile+".pub")
 	if err != nil {
-		log.Println("ERROR: key.Gen writing private:", err)
+		log.Println(err)
 		return
 	}
 
-	var publickey *rsa.PublicKey
-	publickey = &privatekey.PublicKey
-	publicMarshal, err := x509.MarshalPKIXPublicKey(publickey)
-	if err != nil {
-		log.Println("ERROR: key.Gen marshaling public key:", err)
-		return
-	}
-	publicFile, err := os.Create(outFile + ".pub")
-	if err != nil {
-		log.Println("ERROR: key.Gen creating public file:", err)
-		return
-	}
-	defer publicFile.Close()
-	err = pem.Encode(
-		publicFile,
-		&pem.Block{
-			Type:  "RSA PUBLIC KEY",
-			Bytes: publicMarshal,
-		},
-	)
-	if err != nil {
-		log.Println("ERROR: key.Gen writing public:", err)
-		return
-	}
+	publickeyencoder := gob.NewEncoder(publickeyfile)
+	publickeyencoder.Encode(publickey)
+	publickeyfile.Close()
 }

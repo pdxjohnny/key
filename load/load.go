@@ -1,52 +1,45 @@
-package key
+package load
 
 import (
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
-	"io/ioutil"
 	"log"
+	"os"
+	"crypto/rsa"
+	"encoding/gob"
 )
 
-func LoadPemBlock(fileName string) ([]byte, error) {
-	data, err := ioutil.ReadFile(fileName)
+func LoadFile(fileName string, loadTo interface{}) (error) {
+	keyFile, err := os.Open(fileName)
+	defer keyFile.Close()
 	if err != nil {
-		log.Println("ERROR: key.LoadPemBlock reading file: ", err)
-		return nil, err
+		log.Println("ERROR: load.LoadFile reading: ", err)
+		return err
 	}
-	block, _ := pem.Decode(data)
-	blockBytes, err := x509.DecryptPEMBlock(block, password)
+
+	decoder := gob.NewDecoder(keyFile)
+	err = decoder.Decode(loadTo)
 	if err != nil {
-		log.Println("ERROR: key.LoadPemBlock DecryptPEMBlock: ", err)
-		return nil, err
+		 log.Println("ERROR: load.LoadFile decoding: ", err)
+		 return err
 	}
-	return blockBytes, nil
+	return nil
 }
 
-func LoadPrivate(fileName string) (*rsa.PrivateKey, error) {
-	key, err := LoadPemBlock(fileName)
+func LoadPrivate (fileName string) (*rsa.PrivateKey, error) {
+	var privateKey rsa.PrivateKey
+	err := LoadFile(fileName, &privateKey)
 	if err != nil {
-		log.Println("ERROR: key.LoadPrivate LoadPemBlock: ", err)
+		log.Println("ERROR: load.LoadPrivate while loading file: ", err)
 		return nil, err
 	}
-	privateKey, err := x509.ParsePKCS1PrivateKey(key)
-	if err != nil {
-		log.Println("ERROR: key.LoadPrivate ParsePKCS1PrivateKey: ", err)
-		return nil, err
-	}
-	return privateKey, nil
+	return &privateKey, nil
 }
 
-func LoadPublic(fileName string) (*rsa.PublicKey, error) {
-	key, err := LoadPemBlock(fileName)
-	if err != nil {
-		log.Println("ERROR: key.LoadPublic LoadPemBlock: ", err)
+func LoadPublic (fileName string) (*rsa.PublicKey, error) {
+	var publicKey rsa.PublicKey
+	err := LoadFile(fileName, &publicKey)
+		if err != nil {
+		log.Println("ERROR: load.LoadPublic while loading file: ", err)
 		return nil, err
 	}
-	publicKey, err := x509.ParsePKIXPublicKey(key)
-	if err != nil {
-		log.Println("ERROR: key.LoadPublic ParsePKIXPublicKey: ", err)
-		return nil, err
-	}
-	return publicKey.(*rsa.PublicKey), nil
+	return &publicKey, nil
 }

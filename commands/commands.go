@@ -3,9 +3,9 @@ package commands
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/pdxjohnny/key/gen"
-	"github.com/pdxjohnny/key/encrypt"
 	"github.com/pdxjohnny/key/decrypt"
+	"github.com/pdxjohnny/key/encrypt"
+	"github.com/pdxjohnny/key/gen"
 )
 
 var Commands = []*cobra.Command{
